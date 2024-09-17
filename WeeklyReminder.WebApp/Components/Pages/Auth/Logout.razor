@@ -1,11 +1,11 @@
-﻿@page "/logout"
+﻿@page "/auth/logout"
 @attribute [Authorize]
 @inject NavigationManager NavigationManager
 
 <h3>Logging out...</h3>
 
 @code {
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         NavigationManager.NavigateTo("/api/auth/logout", forceLoad: true);
     }

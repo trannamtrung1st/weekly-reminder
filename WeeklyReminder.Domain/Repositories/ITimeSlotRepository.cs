@@ -4,9 +4,9 @@ namespace WeeklyReminder.Domain.Repositories;
 
 public interface ITimeSlotRepository
 {
-    Task<TimeSlot> GetByIdAsync(Guid id);
-    Task<IEnumerable<TimeSlot>> GetAllAsync();
-    Task AddAsync(TimeSlot timeSlot);
-    Task UpdateAsync(TimeSlot timeSlot);
+    Task<TimeSlotEntity> GetByIdAsync(Guid id);
+    Task<IEnumerable<TimeSlotEntity>> GetAllAsync();
+    Task AddAsync(TimeSlotEntity timeSlot);
+    Task UpdateAsync(TimeSlotEntity timeSlot);
     Task DeleteAsync(Guid id);
 }

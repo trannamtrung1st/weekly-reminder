@@ -44,13 +44,13 @@ public class AuthController : ControllerBase
             return Redirect("/");
         }
 
-        return Redirect("/login?error=Invalid username or password");
+        return Redirect("/auth/login?error=Invalid username or password");
     }
 
     [Route("logout")]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Redirect("/login");
+        return Redirect("/auth/login");
     }
 }

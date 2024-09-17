@@ -16,24 +16,31 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    public async Task<User> GetUserByIdAsync(Guid id)
+    public async Task<UserEntity> GetUserByIdAsync(Guid id)
     {
         return await _userRepository.GetByIdAsync(id);
     }
 
-    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    public async Task<IEnumerable<UserEntity>> GetAllUsersAsync()
     {
         return await _userRepository.GetAllAsync();
     }
 
-    public async Task<User> CreateUserAsync(User user)
+    public async Task<UserEntity> CreateUserAsync(UserEntity user)
     {
+        // Check if username or email already exists
+        var existingUser = await _userRepository.GetByUsernameOrEmailAsync(user.Username, user.Email);
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("Username or email already exists");
+        }
+
         await _userRepository.AddAsync(user);
         await _unitOfWork.SaveChangesAsync();
         return user;
     }
 
-    public async Task UpdateUserAsync(User user)
+    public async Task UpdateUserAsync(UserEntity user)
     {
         await _userRepository.UpdateAsync(user);
         await _unitOfWork.SaveChangesAsync();

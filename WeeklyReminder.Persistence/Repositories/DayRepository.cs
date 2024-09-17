@@ -13,23 +13,23 @@ public class DayRepository : IDayRepository
         _context = context;
     }
 
-    public async Task<Day> GetByIdAsync(Guid id)
+    public async Task<DayEntity> GetByIdAsync(Guid id)
     {
         return await _context.Days.FindAsync(id);
     }
 
-    public async Task<IEnumerable<Day>> GetAllAsync()
+    public async Task<IEnumerable<DayEntity>> GetAllAsync()
     {
         return await _context.Days.ToListAsync();
     }
 
-    public async Task AddAsync(Day day)
+    public async Task AddAsync(DayEntity day)
     {
         await _context.Days.AddAsync(day);
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Day day)
+    public async Task UpdateAsync(DayEntity day)
     {
         _context.Entry(day).State = EntityState.Modified;
         await _context.SaveChangesAsync();

@@ -4,5 +4,5 @@ namespace WeeklyReminder.Application.Services.Abstracts;
 
 public interface IWeeklyTimetableParser
 {
-    (Schedule Schedule, List<Day> Days, List<TimeSlot> TimeSlots, List<Activity> Activities) ParseTimetable(Stream excelStream);
+    (ScheduleEntity Schedule, List<DayEntity> Days, List<TimeSlotEntity> TimeSlots, List<ActivityEntity> Activities) ParseTimetable(Stream excelStream);
 }

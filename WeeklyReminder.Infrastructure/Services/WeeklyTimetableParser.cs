@@ -6,20 +6,20 @@ namespace WeeklyReminder.Infrastructure.Services;
 
 public class WeeklyTimetableParser : IWeeklyTimetableParser
 {
-    public (Schedule Schedule, List<Day> Days, List<TimeSlot> TimeSlots, List<Activity> Activities) ParseTimetable(Stream excelStream)
+    public (ScheduleEntity Schedule, List<DayEntity> Days, List<TimeSlotEntity> TimeSlots, List<ActivityEntity> Activities) ParseTimetable(Stream excelStream)
     {
         using var workbook = new XLWorkbook(excelStream);
         var worksheet = workbook.Worksheets.First();
 
-        var schedule = new Schedule
+        var schedule = new ScheduleEntity
         {
             StartTime = TimeSpan.FromHours(7), // Default start time
             TimeInterval = TimeSpan.FromMinutes(15) // Default interval
         };
 
-        var days = new List<Day>();
-        var timeSlots = new List<TimeSlot>();
-        var activities = new Dictionary<string, Activity>();
+        var days = new List<DayEntity>();
+        var timeSlots = new List<TimeSlotEntity>();
+        var activities = new Dictionary<string, ActivityEntity>();
 
         for (int row = 5; row <= worksheet.LastRowUsed().RowNumber(); row++)
         {
@@ -31,16 +31,16 @@ public class WeeklyTimetableParser : IWeeklyTimetableParser
                 if (!string.IsNullOrWhiteSpace(cellValue))
                 {
                     var dayOfWeek = (DayOfWeek)(col - 2);
-                    var day = days.FirstOrDefault(d => d.DayOfWeek == dayOfWeek) ?? new Day { DayOfWeek = dayOfWeek };
+                    var day = days.FirstOrDefault(d => d.DayOfWeek == dayOfWeek) ?? new DayEntity { DayOfWeek = dayOfWeek };
                     if (!days.Contains(day)) days.Add(day);
 
                     if (!activities.TryGetValue(cellValue, out var activity))
                     {
-                        activity = new Activity { Name = cellValue, Color = GenerateRandomColor() };
+                        activity = new ActivityEntity { Name = cellValue, Color = GenerateRandomColor() };
                         activities[cellValue] = activity;
                     }
 
-                    var timeSlot = new TimeSlot { StartTime = time, Activity = activity };
+                    var timeSlot = new TimeSlotEntity { StartTime = time, Activity = activity };
                     timeSlots.Add(timeSlot);
                     day.TimeSlots.Add(timeSlot);
                 }

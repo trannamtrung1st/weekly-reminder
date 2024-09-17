@@ -29,8 +29,8 @@ namespace WeeklyReminder.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true)
+                    Username = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,8 +63,7 @@ namespace WeeklyReminder.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     DayOfWeek = table.Column<int>(type: "INTEGER", nullable: false),
-                    ScheduleId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ScheduleId1 = table.Column<Guid>(type: "TEXT", nullable: true)
+                    ScheduleId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,11 +74,6 @@ namespace WeeklyReminder.Persistence.Migrations
                         principalTable: "Schedules",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Days_Schedules_ScheduleId1",
-                        column: x => x.ScheduleId1,
-                        principalTable: "Schedules",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -89,7 +83,7 @@ namespace WeeklyReminder.Persistence.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     StartTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
                     ActivityId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    DayId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    DayId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -104,18 +98,14 @@ namespace WeeklyReminder.Persistence.Migrations
                         name: "FK_TimeSlots_Days_DayId",
                         column: x => x.DayId,
                         principalTable: "Days",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Days_ScheduleId",
                 table: "Days",
                 column: "ScheduleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Days_ScheduleId1",
-                table: "Days",
-                column: "ScheduleId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Schedules_UserId",

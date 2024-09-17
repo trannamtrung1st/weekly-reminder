@@ -13,22 +13,22 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<User> GetByIdAsync(Guid id)
+    public async Task<UserEntity> GetByIdAsync(Guid id)
     {
         return await _context.Users.FindAsync(id);
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync()
+    public async Task<IEnumerable<UserEntity>> GetAllAsync()
     {
         return await _context.Users.ToListAsync();
     }
 
-    public async Task AddAsync(User user)
+    public async Task AddAsync(UserEntity user)
     {
         await _context.Users.AddAsync(user);
     }
 
-    public async Task UpdateAsync(User user)
+    public async Task UpdateAsync(UserEntity user)
     {
         _context.Entry(user).State = EntityState.Modified;
     }
@@ -40,5 +40,11 @@ public class UserRepository : IUserRepository
         {
             _context.Users.Remove(user);
         }
+    }
+
+    public async Task<UserEntity> GetByUsernameOrEmailAsync(string username, string email)
+    {
+        return await _context.Users
+            .FirstOrDefaultAsync(u => u.Username == username || u.Email == email);
     }
 }

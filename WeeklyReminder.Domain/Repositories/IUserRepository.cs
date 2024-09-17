@@ -4,9 +4,10 @@ namespace WeeklyReminder.Domain.Repositories;
 
 public interface IUserRepository
 {
-    Task<User> GetByIdAsync(Guid id);
-    Task<IEnumerable<User>> GetAllAsync();
-    Task AddAsync(User user);
-    Task UpdateAsync(User user);
+    Task<UserEntity> GetByIdAsync(Guid id);
+    Task<IEnumerable<UserEntity>> GetAllAsync();
+    Task AddAsync(UserEntity user);
+    Task UpdateAsync(UserEntity user);
     Task DeleteAsync(Guid id);
+    Task<UserEntity> GetByUsernameOrEmailAsync(string username, string email);
 }

@@ -1,10 +1,10 @@
 namespace WeeklyReminder.Domain.Entities;
 
-public class Day
+public class DayEntity
 {
     public Guid Id { get; set; }
     public DayOfWeek DayOfWeek { get; set; }
-    public List<TimeSlot> TimeSlots { get; set; } = new List<TimeSlot>();
+    public List<TimeSlotEntity> TimeSlots { get; set; } = new List<TimeSlotEntity>();
     public Guid ScheduleId { get; set; }
-    public Schedule Schedule { get; set; }
+    public ScheduleEntity Schedule { get; set; }
 }

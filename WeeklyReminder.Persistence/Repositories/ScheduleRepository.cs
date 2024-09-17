@@ -13,23 +13,23 @@ public class ScheduleRepository : IScheduleRepository
         _context = context;
     }
 
-    public async Task<Schedule> GetByIdAsync(Guid id)
+    public async Task<ScheduleEntity> GetByIdAsync(Guid id)
     {
         return await _context.Schedules.FindAsync(id);
     }
 
-    public async Task<IEnumerable<Schedule>> GetAllAsync()
+    public async Task<IEnumerable<ScheduleEntity>> GetAllAsync()
     {
         return await _context.Schedules.ToListAsync();
     }
 
-    public async Task AddAsync(Schedule schedule)
+    public async Task AddAsync(ScheduleEntity schedule)
     {
         await _context.Schedules.AddAsync(schedule);
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Schedule schedule)
+    public async Task UpdateAsync(ScheduleEntity schedule)
     {
         _context.Entry(schedule).State = EntityState.Modified;
         await _context.SaveChangesAsync();
@@ -45,7 +45,7 @@ public class ScheduleRepository : IScheduleRepository
         }
     }
 
-    public async Task<Schedule> GetByUserIdAsync(Guid userId)
+    public async Task<ScheduleEntity> GetByUserIdAsync(Guid userId)
     {
         return await _context.Schedules
             .Include(s => s.Days)

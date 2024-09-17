@@ -4,10 +4,10 @@ namespace WeeklyReminder.Domain.Repositories;
 
 public interface IDayRepository
 {
-    Task<Day> GetByIdAsync(Guid id);
-    Task<IEnumerable<Day>> GetAllAsync();
-    Task AddAsync(Day day);
-    Task UpdateAsync(Day day);
+    Task<DayEntity> GetByIdAsync(Guid id);
+    Task<IEnumerable<DayEntity>> GetAllAsync();
+    Task AddAsync(DayEntity day);
+    Task UpdateAsync(DayEntity day);
     Task DeleteAsync(Guid id);
     Task DeleteByScheduleIdAsync(Guid scheduleId);
 }

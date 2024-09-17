@@ -1,6 +1,6 @@
 namespace WeeklyReminder.Domain.Entities;
 
-public class Activity
+public class ActivityEntity
 {
     public Guid Id { get; set; }
     public string Name { get; set; }

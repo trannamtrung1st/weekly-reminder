@@ -1,0 +1,58 @@
+@page "/user/create"
+@attribute [Authorize]
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+
+<h3>Create User</h3>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+    @errorMessage
+</div>
+}
+
+<EditForm Model="@User" OnValidSubmit="HandleValidSubmit" FormName="createUserForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <InputText id="username" @bind-Value="User.Username" class="form-control" />
+        <ValidationMessage For="@(() => User.Username)" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <InputText id="email" @bind-Value="User.Email" class="form-control" />
+        <ValidationMessage For="@(() => User.Email)" />
+    </div>
+
+    <div class="mt-2">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a href="/user/list" class="btn btn-secondary">Cancel</a>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter, SupplyParameterFromForm]
+    public UserEntity User { get; set; } = new UserEntity();
+    private string errorMessage;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await UserService.CreateUserAsync(User);
+            NavigationManager.NavigateTo("/user/list");
+        }
+        catch (InvalidOperationException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred while creating the user: {ex.Message}";
+        }
+    }
+}

@@ -4,9 +4,9 @@ namespace WeeklyReminder.Application.Services.Abstracts;
 
 public interface IUserService
 {
-    Task<User> GetUserByIdAsync(Guid id);
-    Task<IEnumerable<User>> GetAllUsersAsync();
-    Task<User> CreateUserAsync(User user);
-    Task UpdateUserAsync(User user);
+    Task<UserEntity> GetUserByIdAsync(Guid id);
+    Task<IEnumerable<UserEntity>> GetAllUsersAsync();
+    Task<UserEntity> CreateUserAsync(UserEntity user);
+    Task UpdateUserAsync(UserEntity user);
     Task DeleteUserAsync(Guid id);
 }

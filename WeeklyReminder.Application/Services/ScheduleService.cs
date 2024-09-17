@@ -31,23 +31,23 @@ public class ScheduleService : IScheduleService
         _timetableParser = timetableParser;
     }
 
-    public async Task<Schedule> GetScheduleByIdAsync(Guid id)
+    public async Task<ScheduleEntity> GetScheduleByIdAsync(Guid id)
     {
         return await _scheduleRepository.GetByIdAsync(id);
     }
 
-    public async Task<IEnumerable<Schedule>> GetAllSchedulesAsync()
+    public async Task<IEnumerable<ScheduleEntity>> GetAllSchedulesAsync()
     {
         return await _scheduleRepository.GetAllAsync();
     }
 
-    public async Task CreateScheduleAsync(Schedule schedule)
+    public async Task CreateScheduleAsync(ScheduleEntity schedule)
     {
         await _scheduleRepository.AddAsync(schedule);
         await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task UpdateScheduleAsync(Schedule schedule)
+    public async Task UpdateScheduleAsync(ScheduleEntity schedule)
     {
         await _scheduleRepository.UpdateAsync(schedule);
         await _unitOfWork.SaveChangesAsync();

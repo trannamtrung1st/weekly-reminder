@@ -4,10 +4,10 @@ namespace WeeklyReminder.Domain.Repositories;
 
 public interface IActivityRepository
 {
-    Task<Activity> GetByIdAsync(Guid id);
-    Task<IEnumerable<Activity>> GetAllAsync();
-    Task AddAsync(Activity activity);
-    Task UpdateAsync(Activity activity);
+    Task<ActivityEntity> GetByIdAsync(Guid id);
+    Task<IEnumerable<ActivityEntity>> GetAllAsync();
+    Task AddAsync(ActivityEntity activity);
+    Task UpdateAsync(ActivityEntity activity);
     Task DeleteAsync(Guid id);
-    Task<Activity> GetOrCreateByNameAsync(string name);
+    Task<ActivityEntity> GetOrCreateByNameAsync(string name);
 }

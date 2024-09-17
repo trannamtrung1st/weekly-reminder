@@ -18,7 +18,7 @@ public class ScheduleController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Schedule>> GetSchedule(Guid id)
+    public async Task<ActionResult<ScheduleEntity>> GetSchedule(Guid id)
     {
         var schedule = await _scheduleService.GetScheduleByIdAsync(id);
         if (schedule == null)
@@ -29,20 +29,20 @@ public class ScheduleController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Schedule>>> GetAllSchedules()
+    public async Task<ActionResult<IEnumerable<ScheduleEntity>>> GetAllSchedules()
     {
         return Ok(await _scheduleService.GetAllSchedulesAsync());
     }
 
     [HttpPost]
-    public async Task<ActionResult<Schedule>> CreateSchedule(Schedule schedule)
+    public async Task<ActionResult<ScheduleEntity>> CreateSchedule(ScheduleEntity schedule)
     {
         await _scheduleService.CreateScheduleAsync(schedule);
         return CreatedAtAction(nameof(GetSchedule), new { id = schedule.Id }, schedule);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSchedule(Guid id, Schedule schedule)
+    public async Task<IActionResult> UpdateSchedule(Guid id, ScheduleEntity schedule)
     {
         if (id != schedule.Id)
         {

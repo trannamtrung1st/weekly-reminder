@@ -4,10 +4,10 @@ namespace WeeklyReminder.Domain.Repositories;
 
 public interface IScheduleRepository
 {
-    Task<Schedule> GetByIdAsync(Guid id);
-    Task<IEnumerable<Schedule>> GetAllAsync();
-    Task AddAsync(Schedule schedule);
-    Task UpdateAsync(Schedule schedule);
+    Task<ScheduleEntity> GetByIdAsync(Guid id);
+    Task<IEnumerable<ScheduleEntity>> GetAllAsync();
+    Task AddAsync(ScheduleEntity schedule);
+    Task UpdateAsync(ScheduleEntity schedule);
     Task DeleteAsync(Guid id);
-    Task<Schedule> GetByUserIdAsync(Guid userId);
+    Task<ScheduleEntity> GetByUserIdAsync(Guid userId);
 }

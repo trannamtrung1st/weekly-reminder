@@ -13,23 +13,23 @@ public class TimeSlotRepository : ITimeSlotRepository
         _context = context;
     }
 
-    public async Task<TimeSlot> GetByIdAsync(Guid id)
+    public async Task<TimeSlotEntity> GetByIdAsync(Guid id)
     {
         return await _context.TimeSlots.FindAsync(id);
     }
 
-    public async Task<IEnumerable<TimeSlot>> GetAllAsync()
+    public async Task<IEnumerable<TimeSlotEntity>> GetAllAsync()
     {
         return await _context.TimeSlots.ToListAsync();
     }
 
-    public async Task AddAsync(TimeSlot timeSlot)
+    public async Task AddAsync(TimeSlotEntity timeSlot)
     {
         await _context.TimeSlots.AddAsync(timeSlot);
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(TimeSlot timeSlot)
+    public async Task UpdateAsync(TimeSlotEntity timeSlot)
     {
         _context.Entry(timeSlot).State = EntityState.Modified;
         await _context.SaveChangesAsync();

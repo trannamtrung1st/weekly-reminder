@@ -13,23 +13,23 @@ public class ActivityRepository : IActivityRepository
         _context = context;
     }
 
-    public async Task<Activity> GetByIdAsync(Guid id)
+    public async Task<ActivityEntity> GetByIdAsync(Guid id)
     {
         return await _context.Activities.FindAsync(id);
     }
 
-    public async Task<IEnumerable<Activity>> GetAllAsync()
+    public async Task<IEnumerable<ActivityEntity>> GetAllAsync()
     {
         return await _context.Activities.ToListAsync();
     }
 
-    public async Task AddAsync(Activity activity)
+    public async Task AddAsync(ActivityEntity activity)
     {
         await _context.Activities.AddAsync(activity);
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Activity activity)
+    public async Task UpdateAsync(ActivityEntity activity)
     {
         _context.Entry(activity).State = EntityState.Modified;
         await _context.SaveChangesAsync();
@@ -45,12 +45,12 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<Activity> GetOrCreateByNameAsync(string name)
+    public async Task<ActivityEntity> GetOrCreateByNameAsync(string name)
     {
         var activity = await _context.Activities.FirstOrDefaultAsync(a => a.Name == name);
         if (activity == null)
         {
-            activity = new Activity { Name = name, Color = GenerateRandomColor() };
+            activity = new ActivityEntity { Name = name, Color = GenerateRandomColor() };
             await _context.Activities.AddAsync(activity);
         }
         return activity;
