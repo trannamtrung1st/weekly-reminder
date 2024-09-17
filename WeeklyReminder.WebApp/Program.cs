@@ -38,6 +38,8 @@ builder.Services
     .AddScoped<IActivityRepository, ActivityRepository>()
     .AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddCascadingAuthenticationState();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

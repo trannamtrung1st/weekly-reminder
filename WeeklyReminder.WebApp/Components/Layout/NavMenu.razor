@@ -13,13 +13,13 @@
                 <i class="fas fa-home"></i> Home
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/user/list">
-                <i class="fas fa-users"></i> Users
-            </NavLink>
-        </div>
         <AuthorizeView>
             <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/user/list">
+                        <i class="fas fa-users"></i> Users
+                    </NavLink>
+                </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/auth/logout">
                         <i class="fas fa-sign-out-alt"></i> Logout
@@ -29,4 +29,3 @@
         </AuthorizeView>
     </nav>
 </div>
-

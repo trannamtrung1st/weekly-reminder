@@ -1,0 +1,27 @@
+@inject NavigationManager NavigationManager
+@using System.Web
+
+@code {
+    [Parameter]
+    public string To { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var currentUrl = NavigationManager.Uri;
+        var destinationUrl = BuildDestinationUrl(currentUrl);
+        NavigationManager.NavigateTo(destinationUrl);
+    }
+
+    private string BuildDestinationUrl(string returnUrl)
+    {
+        var queryString = HttpUtility.ParseQueryString(string.Empty);
+        queryString["ReturnUrl"] = GetLocalPath(returnUrl);
+        return $"{To}?{queryString}";
+    }
+
+    private string GetLocalPath(string url)
+    {
+        var uri = new Uri(url);
+        return uri.PathAndQuery;
+    }
+}
