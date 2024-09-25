@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using WeeklyReminder.Application.Services;
 using WeeklyReminder.Application.Services.Abstracts;
 using WeeklyReminder.Domain.Repositories;
-using WeeklyReminder.Domain.Services;
 using WeeklyReminder.Infrastructure.Services;
 using WeeklyReminder.Persistence;
 using WeeklyReminder.Persistence.Repositories;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using WeeklyReminder.WebApp.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using WeeklyReminder.Domain.Services.Abstracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,9 +48,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<IScheduleService, ScheduleService>()
+builder.Services
+    .AddScoped<IScheduleService, ScheduleService>()
     .AddScoped<IWeeklyTimetableParser, WeeklyTimetableParser>()
     .AddScoped<IUserService, UserService>()
+    .AddScoped<ISettingsService, SettingsService>()
+    .AddScoped<IEmailService, EmailService>();
+
+builder.Services
     .AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
 var app = builder.Build();

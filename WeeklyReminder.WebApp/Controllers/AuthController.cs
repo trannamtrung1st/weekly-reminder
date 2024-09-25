@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using WeeklyReminder.Application.Services.Abstracts;
 
 namespace WeeklyReminder.WebApp.Controllers;
 
@@ -12,20 +13,25 @@ namespace WeeklyReminder.WebApp.Controllers;
 [Authorize]
 public class AuthController : ControllerBase
 {
+    private readonly ISettingsService _settingsService;
+
+    public AuthController(ISettingsService settingsService)
+    {
+        _settingsService = settingsService;
+    }
+
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromForm] LoginModel model)
     {
-        var credentialsPath = Path.Combine(AppContext.BaseDirectory, "credentials.txt");
-        var credentials = System.IO.File.ReadAllLines(credentialsPath)
-            .Select(line => line.Split('='))
-            .ToDictionary(parts => parts[0], parts => parts[1]);
+        var settings = await _settingsService.GetSettingsAsync();
 
-        if (model.Username == credentials["username"] && model.Password == credentials["password"])
+        if (model.Username == settings.Username && model.Password == settings.Password)
         {
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, model.Username),
+                new Claim(ClaimTypes.Email, settings.Email),
                 new Claim(ClaimTypes.Role, "User")
             };
 

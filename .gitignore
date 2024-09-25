@@ -397,5 +397,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-WeeklyReminder.WebApp/data
 local
+WeeklyReminder.WebApp/data
+WeeklyReminder.WebApp/settings.txt

@@ -1,7 +1,7 @@
 using WeeklyReminder.Application.Services.Abstracts;
 using WeeklyReminder.Domain.Entities;
 using WeeklyReminder.Domain.Repositories;
-using WeeklyReminder.Domain.Services;
+using WeeklyReminder.Domain.Services.Abstracts;
 
 namespace WeeklyReminder.Application.Services;
 

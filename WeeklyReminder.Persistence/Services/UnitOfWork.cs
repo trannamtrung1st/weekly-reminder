@@ -1,5 +1,5 @@
 using WeeklyReminder.Domain.Repositories;
-using WeeklyReminder.Domain.Services;
+using WeeklyReminder.Domain.Services.Abstracts;
 
 namespace WeeklyReminder.Persistence.Services;
 

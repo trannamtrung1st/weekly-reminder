@@ -20,7 +20,9 @@ public class ScheduleRepository : IScheduleRepository
 
     public async Task<IEnumerable<ScheduleEntity>> GetAllAsync()
     {
-        return await _context.Schedules.ToListAsync();
+        return await _context.Schedules
+            .Include(o => o.User)
+            .ToListAsync();
     }
 
     public async Task AddAsync(ScheduleEntity schedule)

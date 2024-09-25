@@ -1,0 +1,142 @@
+@page "/settings"
+@attribute [Authorize]
+@inject ISettingsService SettingsService
+@inject NavigationManager NavigationManager
+@inject IEmailService EmailService
+
+<h3>Settings</h3>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+    @errorMessage
+</div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success" role="alert">
+    @successMessage
+</div>
+}
+
+<EditForm Model="@settings" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <InputText id="username" @bind-Value="settings.Username" class="form-control" />
+        <ValidationMessage For="@(() => settings.Username)" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <InputText id="password" @bind-Value="settings.Password" type="password" class="form-control" />
+        <ValidationMessage For="@(() => settings.Password)" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <InputText id="email" @bind-Value="settings.Email" class="form-control" />
+        <ValidationMessage For="@(() => settings.Email)" />
+    </div>
+
+    <div class="form-group">
+        <label for="appPassword">App Password:</label>
+        <InputText id="appPassword" @bind-Value="settings.AppPassword" type="password" class="form-control" />
+        <ValidationMessage For="@(() => settings.AppPassword)" />
+    </div>
+
+    <div class="mt-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+</EditForm>
+
+<h4 class="mt-4">Send Test Email</h4>
+
+<EditForm Model="@testEmailModel" OnValidSubmit="HandleTestEmailSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="testEmail">Test Email Address:</label>
+        <InputText id="testEmail" @bind-Value="testEmailModel.TestEmail" class="form-control" />
+        <ValidationMessage For="@(() => testEmailModel.TestEmail)" />
+    </div>
+
+    <div class="form-group">
+        <label for="emailTitle">Email Title:</label>
+        <InputText id="emailTitle" @bind-Value="testEmailModel.EmailTitle" class="form-control" />
+        <ValidationMessage For="@(() => testEmailModel.EmailTitle)" />
+    </div>
+
+    <div class="form-group">
+        <label for="emailContent">Email Content:</label>
+        <InputTextArea id="emailContent" @bind-Value="testEmailModel.EmailContent" class="form-control" rows="4" />
+        <ValidationMessage For="@(() => testEmailModel.EmailContent)" />
+    </div>
+
+    <div class="mt-2">
+        <button type="submit" class="btn btn-secondary">Send Test Email</button>
+    </div>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(testEmailMessage))
+{
+    <div class="alert @(testEmailSuccess ? "alert-success" : "alert-danger") mt-3" role="alert">
+    @testEmailMessage
+</div>
+}
+
+@code {
+    private SettingsModel settings = new SettingsModel();
+    private string errorMessage;
+    private string successMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            settings = await SettingsService.GetSettingsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading settings: {ex.Message}";
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await SettingsService.SaveSettingsAsync(settings);
+            successMessage = "Settings saved successfully!";
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving settings: {ex.Message}";
+            successMessage = null;
+        }
+    }
+
+    private TestEmailModel testEmailModel = new TestEmailModel();
+    private string testEmailMessage;
+    private bool testEmailSuccess;
+
+    private async Task HandleTestEmailSubmit()
+    {
+        try
+        {
+            await EmailService.SendEmailAsync(testEmailModel.TestEmail, testEmailModel.EmailTitle, testEmailModel.EmailContent);
+            testEmailSuccess = true;
+            testEmailMessage = "Test email sent successfully!";
+        }
+        catch (Exception ex)
+        {
+            testEmailSuccess = false;
+            testEmailMessage = $"Error sending test email: {ex.Message}";
+        }
+    }
+}
