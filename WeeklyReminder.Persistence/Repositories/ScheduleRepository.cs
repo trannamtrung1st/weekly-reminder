@@ -48,8 +48,7 @@ public class ScheduleRepository : IScheduleRepository
     public async Task<ScheduleEntity> GetByUserIdAsync(Guid userId)
     {
         return await _context.Schedules
-            .Include(s => s.Days)
-            .ThenInclude(d => d.TimeSlots)
+            .Include(d => d.TimeSlots)
             .FirstOrDefaultAsync(s => s.UserId == userId);
     }
 }

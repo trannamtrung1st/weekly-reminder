@@ -50,7 +50,7 @@ public class ActivityRepository : IActivityRepository
         var activity = await _context.Activities.FirstOrDefaultAsync(a => a.Name == name);
         if (activity == null)
         {
-            activity = new ActivityEntity { Name = name, Color = GenerateRandomColor() };
+            activity = new ActivityEntity { Name = name };
             await _context.Activities.AddAsync(activity);
         }
         return activity;

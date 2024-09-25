@@ -1,0 +1,85 @@
+@page "/schedule/list"
+@attribute [Authorize]
+@inject IScheduleService ScheduleService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Schedules - WeeklyReminder</PageTitle>
+
+<h3>Schedule List</h3>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+@if (schedules == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Start Time</th>
+                <th>Time Interval</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var schedule in schedules)
+            {
+                <tr>
+                    <td>@schedule.User.Username</td>
+                    <td>@schedule.StartTime.ToString(@"hh\:mm")</td>
+                    <td>@schedule.TimeInterval.ToString(@"hh\:mm")</td>
+                    <td>
+                        <a href="/schedule/edit/@schedule.Id" class="btn btn-primary">Edit</a>
+                        <button class="btn btn-danger" @onclick="() => DeleteSchedule(schedule.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a href="/schedule/create" class="btn btn-success">Create New Schedule</a>
+
+@code {
+    private IEnumerable<ScheduleEntity> schedules;
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSchedules();
+    }
+
+    private async Task LoadSchedules()
+    {
+        try
+        {
+            schedules = await ScheduleService.GetAllSchedulesAsync();
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading schedules: {ex.Message}";
+        }
+    }
+
+    private async Task DeleteSchedule(Guid id)
+    {
+        try
+        {
+            await ScheduleService.DeleteScheduleAsync(id);
+            await LoadSchedules();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error deleting schedule: {ex.Message}";
+        }
+    }
+}

@@ -33,7 +33,6 @@ builder.Services.AddDbContext<WeeklyReminderDbContext>(options =>
 builder.Services
     .AddScoped<IUnitOfWork, UnitOfWork>()
     .AddScoped<IScheduleRepository, ScheduleRepository>()
-    .AddScoped<IDayRepository, DayRepository>()
     .AddScoped<ITimeSlotRepository, TimeSlotRepository>()
     .AddScoped<IActivityRepository, ActivityRepository>()
     .AddScoped<IUserRepository, UserRepository>();

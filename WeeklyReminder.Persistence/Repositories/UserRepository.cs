@@ -28,9 +28,10 @@ public class UserRepository : IUserRepository
         await _context.Users.AddAsync(user);
     }
 
-    public async Task UpdateAsync(UserEntity user)
+    public Task UpdateAsync(UserEntity user)
     {
         _context.Entry(user).State = EntityState.Modified;
+        return Task.CompletedTask;
     }
 
     public async Task DeleteAsync(Guid id)
