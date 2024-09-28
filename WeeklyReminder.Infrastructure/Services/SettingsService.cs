@@ -18,6 +18,12 @@ public class SettingsService : ISettingsService
     public async Task<SystemCredentials> GetSystemCredentialsAsync()
     {
         var credentialsPath = Path.Combine(AppContext.BaseDirectory, CredentialsFile);
+        if (!File.Exists(credentialsPath))
+        {
+            var defaultCredentials = new SystemCredentials();
+            return defaultCredentials;
+        }
+
         var lines = await File.ReadAllLinesAsync(credentialsPath);
         var credentials = new SystemCredentials();
 
