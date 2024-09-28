@@ -9,88 +9,82 @@
 @if (!string.IsNullOrEmpty(errorMessage))
 {
     <div class="alert alert-danger" role="alert">
-    @errorMessage
-</div>
+        @errorMessage
+    </div>
 }
 
 @if (!string.IsNullOrEmpty(successMessage))
 {
     <div class="alert alert-success" role="alert">
-    @successMessage
-</div>
+        @successMessage
+    </div>
 }
 
-<EditForm Model="@settings" OnValidSubmit="HandleValidSubmit">
+<h4>System Credentials</h4>
+<EditForm Model="@credentials" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="form-group">
         <label for="username">Username:</label>
-        <InputText id="username" @bind-Value="settings.Username" class="form-control" />
-        <ValidationMessage For="@(() => settings.Username)" />
-    </div>
-
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <InputText id="password" @bind-Value="settings.Password" type="password" class="form-control" />
-        <ValidationMessage For="@(() => settings.Password)" />
+        <InputText id="username" @bind-Value="credentials.Username" class="form-control" />
+        <ValidationMessage For="@(() => credentials.Username)" />
     </div>
 
     <div class="form-group">
         <label for="email">Email:</label>
-        <InputText id="email" @bind-Value="settings.Email" class="form-control" />
-        <ValidationMessage For="@(() => settings.Email)" />
+        <InputText id="email" @bind-Value="credentials.Email" class="form-control" />
+        <ValidationMessage For="@(() => credentials.Email)" />
     </div>
 
     <div class="form-group">
-        <label for="appPassword">App Password:</label>
-        <InputText id="appPassword" @bind-Value="settings.AppPassword" type="password" class="form-control" />
-        <ValidationMessage For="@(() => settings.AppPassword)" />
+        <label for="newPassword">New Password (leave blank to keep current):</label>
+        <InputText id="newPassword" @bind-Value="credentials.Password" type="password" class="form-control" />
     </div>
 
-    <div class="mt-2">
-        <button type="submit" class="btn btn-primary">Save</button>
+    <div class="form-group">
+        <label for="newAppPassword">New App Password (leave blank to keep current):</label>
+        <InputText id="newAppPassword" @bind-Value="credentials.AppPassword" type="password" class="form-control" />
     </div>
+
+    <button type="submit" class="btn btn-primary">Save Credentials</button>
 </EditForm>
 
-<h4 class="mt-4">Send Test Email</h4>
-
-<EditForm Model="@testEmailModel" OnValidSubmit="HandleTestEmailSubmit">
+<h4 class="mt-4">Test Email</h4>
+<EditForm Model="@testEmailModel" OnValidSubmit="SendTestEmail">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="form-group">
         <label for="testEmail">Test Email Address:</label>
-        <InputText id="testEmail" @bind-Value="testEmailModel.TestEmail" class="form-control" />
-        <ValidationMessage For="@(() => testEmailModel.TestEmail)" />
+        <InputText id="testEmail" @bind-Value="testEmailModel.Email" class="form-control" />
+        <ValidationMessage For="@(() => testEmailModel.Email)" />
     </div>
 
     <div class="form-group">
-        <label for="emailTitle">Email Title:</label>
-        <InputText id="emailTitle" @bind-Value="testEmailModel.EmailTitle" class="form-control" />
-        <ValidationMessage For="@(() => testEmailModel.EmailTitle)" />
+        <label for="testSubject">Subject:</label>
+        <InputText id="testSubject" @bind-Value="testEmailModel.Subject" class="form-control" />
+        <ValidationMessage For="@(() => testEmailModel.Subject)" />
     </div>
 
     <div class="form-group">
-        <label for="emailContent">Email Content:</label>
-        <InputTextArea id="emailContent" @bind-Value="testEmailModel.EmailContent" class="form-control" rows="4" />
-        <ValidationMessage For="@(() => testEmailModel.EmailContent)" />
+        <label for="testBody">Body:</label>
+        <InputTextArea id="testBody" @bind-Value="testEmailModel.Body" class="form-control" rows="5" />
+        <ValidationMessage For="@(() => testEmailModel.Body)" />
     </div>
 
-    <div class="mt-2">
-        <button type="submit" class="btn btn-secondary">Send Test Email</button>
-    </div>
+    <button type="submit" class="btn btn-primary">Send Test Email</button>
 </EditForm>
 
 @if (!string.IsNullOrEmpty(testEmailMessage))
 {
     <div class="alert @(testEmailSuccess ? "alert-success" : "alert-danger") mt-3" role="alert">
-    @testEmailMessage
-</div>
+        @testEmailMessage
+    </div>
 }
 
 @code {
-    private SettingsModel settings = new SettingsModel();
+    private SystemCredentials credentials = new SystemCredentials();
     private string errorMessage;
     private string successMessage;
 
@@ -98,11 +92,13 @@
     {
         try
         {
-            settings = await SettingsService.GetSettingsAsync(getSecrets: false);
+            credentials = await SettingsService.GetSystemCredentialsAsync();
+            credentials.Password = string.Empty;
+            credentials.AppPassword = string.Empty;
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error loading settings: {ex.Message}";
+            errorMessage = $"Error loading credentials: {ex.Message}";
         }
     }
 
@@ -110,13 +106,15 @@
     {
         try
         {
-            await SettingsService.SaveSettingsAsync(settings);
-            successMessage = "Settings saved successfully!";
+            await SettingsService.SaveSystemCredentialsAsync(credentials);
+            successMessage = "Credentials saved successfully!";
             errorMessage = null;
+            credentials.Password = string.Empty;
+            credentials.AppPassword = string.Empty;
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error saving settings: {ex.Message}";
+            errorMessage = $"Error saving credentials: {ex.Message}";
             successMessage = null;
         }
     }
@@ -125,18 +123,18 @@
     private string testEmailMessage;
     private bool testEmailSuccess;
 
-    private async Task HandleTestEmailSubmit()
+    private async Task SendTestEmail()
     {
         try
         {
-            await EmailService.SendEmailAsync(testEmailModel.TestEmail, testEmailModel.EmailTitle, testEmailModel.EmailContent);
-            testEmailSuccess = true;
+            await EmailService.SendEmailAsync(testEmailModel.Email, testEmailModel.Subject, testEmailModel.Body);
             testEmailMessage = "Test email sent successfully!";
+            testEmailSuccess = true;
         }
         catch (Exception ex)
         {
-            testEmailSuccess = false;
             testEmailMessage = $"Error sending test email: {ex.Message}";
+            testEmailSuccess = false;
         }
     }
 }

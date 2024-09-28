@@ -149,10 +149,11 @@ static async Task ApplyDatabaseMigration(WebApplication app)
 
 static async Task ScheduleHangfireJobs(WebApplication app)
 {
+    await Task.CompletedTask;
     using var scope = app.Services.CreateScope();
     var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
-    var settings = await settingsService.GetSettingsAsync(getSecrets: false);
-    var serverTimeZone = TimeZoneInfo.FindSystemTimeZoneById(settings.ServerTimeZone);
+    var appSettings = settingsService.GetAppSettings();
+    var serverTimeZone = TimeZoneInfo.FindSystemTimeZoneById(appSettings.ServerTimeZone);
 
     RecurringJob.AddOrUpdate<IReminderService>(
         "check-upcoming-activities",

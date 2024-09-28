@@ -23,14 +23,14 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromForm] LoginModel model)
     {
-        var settings = await _settingsService.GetSettingsAsync(getSecrets: true);
+        var credentials = await _settingsService.GetSystemCredentialsAsync();
 
-        if (model.Username == settings.Username && model.Password == settings.Password)
+        if (model.Username == credentials.Username && model.Password == credentials.Password)
         {
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, model.Username),
-                new Claim(ClaimTypes.Email, settings.Email),
+                new Claim(ClaimTypes.Email, credentials.Email),
                 new Claim(ClaimTypes.Role, "User")
             };
 

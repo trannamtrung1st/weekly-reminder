@@ -31,11 +31,11 @@ public class ReminderService : IReminderService
 
     public async Task CheckUpcomingActivitiesAndSendReminders()
     {
-        var settings = await _settingsService.GetSettingsAsync(getSecrets: false);
-        var serverTimeZone = TimeZoneInfo.FindSystemTimeZoneById(settings.ServerTimeZone);
+        var appSettings = _settingsService.GetAppSettings();
+        var serverTimeZone = TimeZoneInfo.FindSystemTimeZoneById(appSettings.ServerTimeZone);
 
         var now = TimeZoneInfo.ConvertTime(DateTime.UtcNow, serverTimeZone);
-        var threshold = TimeSpan.FromMinutes(5);
+        var threshold = TimeSpan.FromMinutes(appSettings.ReminderThresholdMinutes);
         var upcomingTimeSlotEnd = now.Add(threshold);
         var upcomingTimeSlots = await _scheduleRepository.GetUpcomingTimeSlotsAsync(now, upcomingTimeSlotEnd);
 
@@ -82,8 +82,8 @@ public class ReminderService : IReminderService
 
     private string GenerateConfirmationLink(string token)
     {
-        var baseUrl = _settingsService.GetApplicationBaseUrl();
-        return $"{baseUrl}/api/reminder/confirm/{token}";
+        var appSettings = _settingsService.GetAppSettings();
+        return $"{appSettings.ApplicationBaseUrl}/api/reminder/confirm/{token}";
     }
 
     public async Task<bool> ConfirmReminderAsync(string token)

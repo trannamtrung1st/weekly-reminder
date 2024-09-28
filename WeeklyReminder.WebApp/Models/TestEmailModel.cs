@@ -6,11 +6,11 @@ public class TestEmailModel
 {
     [Required]
     [EmailAddress]
-    public string TestEmail { get; set; }
+    public string Email { get; set; }
 
     [Required]
-    public string EmailTitle { get; set; } = "Test Email";
+    public string Subject { get; set; } = "Test Email";
 
     [Required]
-    public string EmailContent { get; set; } = "This is a test email from WeeklyReminder.";
+    public string Body { get; set; } = "This is a test email from WeeklyReminder.";
 }

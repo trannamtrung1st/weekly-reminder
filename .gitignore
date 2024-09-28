@@ -399,4 +399,4 @@ FodyWeavers.xsd
 
 local
 WeeklyReminder.WebApp/data
-WeeklyReminder.WebApp/settings.txt
+WeeklyReminder.WebApp/credentials.txt

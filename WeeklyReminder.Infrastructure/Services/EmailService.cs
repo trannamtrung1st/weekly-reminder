@@ -15,9 +15,9 @@ public class EmailService : IEmailService
 
     public async Task SendEmailAsync(string to, string subject, string body)
     {
-        var settings = await _settingsService.GetSettingsAsync(getSecrets: true);
-        var fromEmail = settings.Email;
-        var appPassword = settings.AppPassword;
+        var credentials = await _settingsService.GetSystemCredentialsAsync();
+        var fromEmail = credentials.Email;
+        var appPassword = credentials.AppPassword;
 
         var smtpClient = new SmtpClient("smtp.gmail.com")
         {

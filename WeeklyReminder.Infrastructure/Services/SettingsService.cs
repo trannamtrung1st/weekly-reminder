@@ -1,12 +1,13 @@
 using WeeklyReminder.Application.Services.Abstracts;
 using WeeklyReminder.Domain.Models;
 using Microsoft.Extensions.Configuration;
+using WeeklyReminder.Application.Models;
 
 namespace WeeklyReminder.Infrastructure.Services;
 
 public class SettingsService : ISettingsService
 {
-    private const string SettingsFile = "settings.txt";
+    private const string CredentialsFile = "credentials.txt";
     private readonly IConfiguration _configuration;
 
     public SettingsService(IConfiguration configuration)
@@ -14,11 +15,11 @@ public class SettingsService : ISettingsService
         _configuration = configuration;
     }
 
-    public async Task<SettingsModel> GetSettingsAsync(bool getSecrets)
+    public async Task<SystemCredentials> GetSystemCredentialsAsync()
     {
-        var settingsPath = Path.Combine(AppContext.BaseDirectory, SettingsFile);
-        var lines = await File.ReadAllLinesAsync(settingsPath);
-        var settings = new SettingsModel();
+        var credentialsPath = Path.Combine(AppContext.BaseDirectory, CredentialsFile);
+        var lines = await File.ReadAllLinesAsync(credentialsPath);
+        var credentials = new SystemCredentials();
 
         foreach (var line in lines)
         {
@@ -28,50 +29,53 @@ public class SettingsService : ISettingsService
                 var key = parts[0].Trim();
                 var value = parts[1].Trim();
 
-                switch (key)
+                switch (key.ToLower())
                 {
                     case "username":
-                        settings.Username = value;
+                        credentials.Username = value;
                         break;
                     case "password":
-                        if (getSecrets)
-                            settings.Password = value;
+                        credentials.Password = value;
                         break;
                     case "email":
-                        settings.Email = value;
+                        credentials.Email = value;
                         break;
                     case "apppassword":
-                        if (getSecrets)
-                            settings.AppPassword = value;
-                        break;
-                    case "servertimezone":
-                        settings.ServerTimeZone = value;
+                        credentials.AppPassword = value;
                         break;
                 }
             }
         }
 
-        return settings;
+        return credentials;
     }
 
-    public async Task SaveSettingsAsync(SettingsModel settings)
+    public async Task SaveSystemCredentialsAsync(SystemCredentials newCredentials)
     {
-        var settingsPath = Path.Combine(AppContext.BaseDirectory, SettingsFile);
-        var currentSettings = await GetSettingsAsync(getSecrets: true);
-        var lines = new[]
+        var currentCredentials = await GetSystemCredentialsAsync();
+
+        var updatedCredentials = new SystemCredentials
         {
-            $"username={settings.Username ?? currentSettings.Username}",
-            $"password={settings.Password ?? currentSettings.Password}",
-            $"email={settings.Email ?? currentSettings.Email}",
-            $"apppassword={settings.AppPassword ?? currentSettings.AppPassword}",
-            $"servertimezone={settings.ServerTimeZone ?? currentSettings.ServerTimeZone}"
+            Username = newCredentials.Username,
+            Email = newCredentials.Email,
+            Password = string.IsNullOrEmpty(newCredentials.Password) ? currentCredentials.Password : newCredentials.Password,
+            AppPassword = string.IsNullOrEmpty(newCredentials.AppPassword) ? currentCredentials.AppPassword : newCredentials.AppPassword
         };
 
-        await File.WriteAllLinesAsync(settingsPath, lines);
+        var credentialsPath = Path.Combine(AppContext.BaseDirectory, CredentialsFile);
+        var lines = new[]
+        {
+            $"username={updatedCredentials.Username}",
+            $"password={updatedCredentials.Password}",
+            $"email={updatedCredentials.Email}",
+            $"apppassword={updatedCredentials.AppPassword}"
+        };
+
+        await File.WriteAllLinesAsync(credentialsPath, lines);
     }
 
-    public string GetApplicationBaseUrl()
+    public AppSettings GetAppSettings()
     {
-        return _configuration["ApplicationBaseUrl"];
+        return _configuration.GetSection("AppSettings").Get<AppSettings>();
     }
 }
