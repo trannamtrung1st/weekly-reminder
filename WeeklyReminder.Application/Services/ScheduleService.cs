@@ -122,6 +122,7 @@ public class ScheduleService : IScheduleService
         // Get existing activities
         var existingActivities = await _activityRepository.GetByScheduleIdAsync(scheduleId);
         var activityDict = existingActivities.ToDictionary(a => a.Name, StringComparer.OrdinalIgnoreCase);
+        var updatedActivityNames = new HashSet<string>(activities.Select(a => a.Name), StringComparer.OrdinalIgnoreCase);
 
         // Update or add activities
         foreach (var activity in activities)
@@ -132,6 +133,13 @@ public class ScheduleService : IScheduleService
                 await _activityRepository.AddAsync(activity);
                 activityDict[activity.Name] = activity;
             }
+        }
+
+        // Delete unused activities
+        var unusedActivities = existingActivities.Where(a => !updatedActivityNames.Contains(a.Name)).ToList();
+        foreach (var unusedActivity in unusedActivities)
+        {
+            await _activityRepository.DeleteAsync(unusedActivity.Id);
         }
 
         // Add new time slots

@@ -25,7 +25,9 @@ public class ScheduleRepository : IScheduleRepository
     public async Task<IEnumerable<ScheduleEntity>> GetAllAsync()
     {
         return await _context.Schedules
-            .Include(o => o.User)
+            .Include(s => s.User)
+            .Include(s => s.TimeSlots)
+                .ThenInclude(ts => ts.Activity)
             .ToListAsync();
     }
 
@@ -55,5 +57,21 @@ public class ScheduleRepository : IScheduleRepository
             .Include(d => d.TimeSlots)
             .ThenInclude(d => d.Activity)
             .FirstOrDefaultAsync(s => s.UserId == userId);
+    }
+
+    public async Task<List<TimeSlotEntity>> GetUpcomingTimeSlotsAsync(DateTime start, DateTime end)
+    {
+        var currentTime = start.TimeOfDay;
+        var endTime = end.TimeOfDay;
+        var currentDayOfWeek = start.DayOfWeek;
+
+        return await _context.TimeSlots
+            .Where(ts => ts.DoW == currentDayOfWeek &&
+                         ts.StartTime >= currentTime.TotalMinutes &&
+                         ts.StartTime <= endTime.TotalMinutes)
+            .Include(ts => ts.Schedule)
+                .ThenInclude(s => s.User)
+            .Include(ts => ts.Activity)
+            .ToListAsync();
     }
 }

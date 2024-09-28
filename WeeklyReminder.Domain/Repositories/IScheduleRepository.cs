@@ -10,4 +10,5 @@ public interface IScheduleRepository
     Task UpdateAsync(ScheduleEntity schedule);
     Task DeleteAsync(Guid id);
     Task<ScheduleEntity> GetByUserIdAsync(Guid userId);
+    Task<List<TimeSlotEntity>> GetUpcomingTimeSlotsAsync(DateTime start, DateTime end);
 }

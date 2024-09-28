@@ -98,8 +98,8 @@ namespace WeeklyReminder.Persistence.Migrations
                     b.Property<Guid>("ScheduleId")
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("StartTime")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 

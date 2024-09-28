@@ -89,7 +89,7 @@ namespace WeeklyReminder.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    StartTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
+                    StartTime = table.Column<double>(type: "REAL", nullable: false),
                     DoW = table.Column<int>(type: "INTEGER", nullable: false),
                     ActivityId = table.Column<Guid>(type: "TEXT", nullable: false),
                     ScheduleId = table.Column<Guid>(type: "TEXT", nullable: false)

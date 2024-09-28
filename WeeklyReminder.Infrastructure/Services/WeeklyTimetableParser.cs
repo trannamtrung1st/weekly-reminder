@@ -46,7 +46,7 @@ public class WeeklyTimetableParser : IWeeklyTimetableParser
                     var dow = worksheet.Cell(5, col).GetString();
                     var timeSlot = new TimeSlotEntity
                     {
-                        StartTime = time,
+                        StartTime = time.TotalMinutes,
                         Activity = activity,
                         DoW = ParseDayOfWeek(dow)
                     };

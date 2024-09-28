@@ -1,6 +1,7 @@
 @page "/schedule/edit/{Id:guid}"
 @attribute [Authorize]
 @inject IScheduleService ScheduleService
+@inject IActivityService ActivityService
 @inject IEmailTemplateService EmailTemplateService
 @inject NavigationManager NavigationManager
 
@@ -79,7 +80,7 @@ else
         try
         {
             schedule = await ScheduleService.GetScheduleByIdAsync(Id);
-            activities = await ScheduleService.GetActivitiesByScheduleIdAsync(Id);
+            activities = await ActivityService.GetActivitiesByScheduleIdAsync(Id);
         }
         catch (Exception ex)
         {
@@ -100,7 +101,7 @@ else
             {
                 await ScheduleService.UpdateScheduleAsync(schedule);
             }
-            activities = await ScheduleService.GetActivitiesByScheduleIdAsync(Id);
+            activities = await ActivityService.GetActivitiesByScheduleIdAsync(Id);
             errorMessage = null;
         }
         catch (Exception ex)

@@ -26,6 +26,11 @@ public class ActivityService : IActivityService
         return await _activityRepository.GetAllAsync();
     }
 
+    public async Task<IEnumerable<ActivityEntity>> GetActivitiesByScheduleIdAsync(Guid scheduleId)
+    {
+        return await _activityRepository.GetByScheduleIdAsync(scheduleId);
+    }
+
     public async Task<ActivityEntity> CreateActivityAsync(ActivityEntity activity)
     {
         await _activityRepository.AddAsync(activity);

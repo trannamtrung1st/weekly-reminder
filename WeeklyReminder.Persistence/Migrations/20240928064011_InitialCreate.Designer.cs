@@ -11,7 +11,7 @@ using WeeklyReminder.Persistence;
 namespace WeeklyReminder.Persistence.Migrations
 {
     [DbContext(typeof(WeeklyReminderDbContext))]
-    [Migration("20240928043907_InitialCreate")]
+    [Migration("20240928064011_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -101,8 +101,8 @@ namespace WeeklyReminder.Persistence.Migrations
                     b.Property<Guid>("ScheduleId")
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("StartTime")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 

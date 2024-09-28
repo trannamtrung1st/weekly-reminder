@@ -37,6 +37,9 @@ public class SettingsService : ISettingsService
                         if (getSecrets)
                             settings.AppPassword = value;
                         break;
+                    case "servertimezone":
+                        settings.ServerTimeZone = value;
+                        break;
                 }
             }
         }
@@ -53,7 +56,8 @@ public class SettingsService : ISettingsService
             $"username={settings.Username ?? currentSettings.Username}",
             $"password={settings.Password ?? currentSettings.Password}",
             $"email={settings.Email ?? currentSettings.Email}",
-            $"apppassword={settings.AppPassword ?? currentSettings.AppPassword}"
+            $"apppassword={settings.AppPassword ?? currentSettings.AppPassword}",
+            $"servertimezone={settings.ServerTimeZone ?? currentSettings.ServerTimeZone}"
         };
 
         await File.WriteAllLinesAsync(settingsPath, lines);

@@ -14,6 +14,8 @@ using WeeklyReminder.WebApp.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using WeeklyReminder.Domain.Services.Abstracts;
 using WeeklyReminder.Application.Repositories;
+using Hangfire;
+using Hangfire.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,10 +59,19 @@ builder.Services
     .AddScoped<ISettingsService, SettingsService>()
     .AddScoped<IEmailService, EmailService>()
     .AddScoped<IEmailTemplateService, EmailTemplateService>()
-    .AddScoped<IActivityService, ActivityService>();
+    .AddScoped<IActivityService, ActivityService>()
+    .AddScoped<IReminderService, ReminderService>();
 
 builder.Services
     .AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseInMemoryStorage());
+
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 
@@ -93,7 +104,10 @@ app.MapRazorComponents<App>()
 
 app.MapControllers();
 
+app.UseHangfireDashboard();
+
 await ApplyDatabaseMigration(app);
+await ScheduleHangfireJobs(app);
 
 app.Run();
 
@@ -131,4 +145,21 @@ static async Task ApplyDatabaseMigration(WebApplication app)
     {
         logger.LogError(ex, "An error occurred while migrating the database.");
     }
+}
+
+static async Task ScheduleHangfireJobs(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
+    var settings = await settingsService.GetSettingsAsync(getSecrets: false);
+    var serverTimeZone = TimeZoneInfo.FindSystemTimeZoneById(settings.ServerTimeZone);
+
+    RecurringJob.AddOrUpdate<IReminderService>(
+        "check-upcoming-activities",
+        service => service.CheckUpcomingActivitiesAndSendReminders(),
+        "*/1 * * * *",
+        options: new RecurringJobOptions
+        {
+            TimeZone = serverTimeZone
+        });
 }

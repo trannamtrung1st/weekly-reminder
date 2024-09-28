@@ -21,6 +21,7 @@ public class EmailTemplateRepository : IEmailTemplateRepository
     public async Task<IEnumerable<EmailTemplateEntity>> GetByActivityIdAsync(Guid activityId)
     {
         return await _context.EmailTemplates
+            .Include(et => et.Activity)
             .Where(et => et.ActivityId == activityId)
             .ToListAsync();
     }

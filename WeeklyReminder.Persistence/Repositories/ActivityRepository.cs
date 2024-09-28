@@ -47,6 +47,7 @@ public class ActivityRepository : IActivityRepository
     {
         return await _context.Activities
             .Where(a => a.ScheduleId == scheduleId)
+            .Include(a => a.EmailTemplates)
             .ToListAsync();
     }
 }
