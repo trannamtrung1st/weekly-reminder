@@ -9,4 +9,5 @@ public class ScheduleEntity
     public UserEntity User { get; set; }
     public List<ActivityEntity> Activities { get; set; } = [];
     public List<TimeSlotEntity> TimeSlots { get; set; } = [];
+    public bool IsReminderEnabled { get; set; } = true;
 }

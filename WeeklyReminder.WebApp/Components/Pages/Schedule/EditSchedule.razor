@@ -26,7 +26,6 @@ else
     <EditForm Model="@schedule" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
-
         <div class="form-group">
             <label for="userName">User:</label>
             <InputText id="userName" @bind-Value="schedule.User.Username" class="form-control" readonly />
@@ -40,6 +39,13 @@ else
         <div class="form-group">
             <label>Unresolved Reminders: @unresolvedRemindersCount</label>
             <button type="button" class="btn btn-warning" @onclick="ClearAllReminders">Clear All Reminders</button>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <InputCheckbox @bind-Value="schedule.IsReminderEnabled" />
+                Enable Reminders
+            </label>
         </div>
 
         <div class="mt-2">

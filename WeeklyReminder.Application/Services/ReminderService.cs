@@ -41,10 +41,13 @@ public class ReminderService : IReminderService
 
         foreach (var timeSlot in upcomingTimeSlots)
         {
-            var existingReminder = await _reminderRepository.GetMostRecentReminderForTimeSlotAsync(timeSlot.Id);
-            if (existingReminder == null)
+            if (timeSlot.Schedule.IsReminderEnabled)
             {
-                await SendReminderEmail(timeSlot.Schedule.User, timeSlot.Activity, timeSlot);
+                var existingReminder = await _reminderRepository.GetMostRecentReminderForTimeSlotAsync(timeSlot.Id);
+                if (existingReminder == null)
+                {
+                    await SendReminderEmail(timeSlot.Schedule.User, timeSlot.Activity, timeSlot);
+                }
             }
         }
     }

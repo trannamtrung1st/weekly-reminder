@@ -28,6 +28,7 @@ else
                 <th>Start Time</th>
                 <th>Time Interval</th>
                 <th>Actions</th>
+                <th>Reminders</th>
             </tr>
         </thead>
         <tbody>
@@ -41,6 +42,7 @@ else
                         <a href="/schedule/edit/@schedule.Id" class="btn btn-primary">Edit</a>
                         <button class="btn btn-danger" @onclick="() => ConfirmDeleteSchedule(schedule.Id)">Delete</button>
                     </td>
+                    <td>@(schedule.IsReminderEnabled ? "Enabled" : "Disabled")</td>
                 </tr>
             }
         </tbody>
