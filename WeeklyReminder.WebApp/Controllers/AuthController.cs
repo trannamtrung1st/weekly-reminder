@@ -25,7 +25,8 @@ public class AuthController : ControllerBase
     {
         var credentials = await _settingsService.GetSystemCredentialsAsync();
 
-        if (model.Username == credentials.Username && model.Password == credentials.Password)
+        if ((credentials.Username is null || model.Username == credentials.Username)
+            && (credentials.Password is null || model.Password == credentials.Password))
         {
             var claims = new List<Claim>
             {
