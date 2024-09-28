@@ -55,27 +55,45 @@ public class ReminderService : IReminderService
     public async Task SendReminderEmail(UserEntity user, ActivityEntity activity, TimeSlotEntity timeSlot)
     {
         var templates = await _emailTemplateService.GetByActivityIdAsync(activity.Id);
-        if (templates.Any())
+        var randomTemplate = templates.Any()
+            ? templates.OrderBy(_ => Guid.NewGuid()).First()
+            : GetDefaultTemplate(activity);
+        var confirmationToken = GenerateConfirmationToken();
+        var confirmationLink = GenerateConfirmationLink(confirmationToken);
+        var subject = ReplaceVariables(content: $"{SubjectPrefix} {randomTemplate.Subject}", activity, timeSlot, confirmationLink);
+        var body = ReplaceVariables(content: randomTemplate.Body, activity, timeSlot, confirmationLink);
+
+        await _emailService.SendEmailAsync(user.Email, subject, body);
+
+        var reminder = new ReminderEntity
         {
-            var randomTemplate = templates.OrderBy(_ => Guid.NewGuid()).First();
-            var subject = $"{SubjectPrefix} {randomTemplate.Subject}";
-            var confirmationToken = GenerateConfirmationToken();
-            var confirmationLink = GenerateConfirmationLink(confirmationToken);
-            var body = randomTemplate.Body
-                .Replace("{ActivityName}", activity.Name)
-                .Replace("{StartTime}", timeSlot.StartTime.ToString("HH:mm"))
-                .Replace("{ConfirmationLink}", confirmationLink);
+            TimeSlotId = timeSlot.Id,
+            SentAt = DateTime.UtcNow,
+            ConfirmationToken = confirmationToken
+        };
+        await _reminderRepository.AddAsync(reminder);
+    }
 
-            await _emailService.SendEmailAsync(user.Email, subject, body);
+    private static string ReplaceVariables(string content, ActivityEntity activity, TimeSlotEntity timeSlot, string confirmationLink)
+    {
+        return content.Replace("{ActivityName}", activity.Name)
+            .Replace("{StartTime}", timeSlot.StartTime.ToString("HH:mm"))
+            .Replace("{ConfirmationLink}", confirmationLink);
+    }
 
-            var reminder = new ReminderEntity
-            {
-                TimeSlotId = timeSlot.Id,
-                SentAt = DateTime.UtcNow,
-                ConfirmationToken = confirmationToken
-            };
-            await _reminderRepository.AddAsync(reminder);
-        }
+    private static EmailTemplateEntity GetDefaultTemplate(ActivityEntity activity)
+    {
+        return new EmailTemplateEntity
+        {
+            Id = Guid.Empty,
+            Activity = activity,
+            ActivityId = activity.Id,
+            Name = "Default template",
+            Body =
+@"<p>It's time to: {ActivityName} ({StartTime})</p>
+<p>Confirm here: {ConfirmationLink}</p>",
+            Subject = "It's time to: {ActivityName} ({StartTime})"
+        };
     }
 
     private string GenerateConfirmationToken()
