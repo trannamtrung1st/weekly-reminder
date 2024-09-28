@@ -5,9 +5,8 @@ using WeeklyReminder.Domain.Entities;
 
 namespace WeeklyReminder.WebApp.Controllers;
 
-[ApiController]
+[ApiController, Authorize]
 [Route("api/[controller]")]
-[Authorize]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;

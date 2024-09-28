@@ -1,0 +1,168 @@
+@page "/email-templates/{ActivityId:guid}"
+@attribute [Authorize]
+@inject IEmailTemplateService EmailTemplateService
+@inject IActivityService ActivityService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Manage Email Templates - WeeklyReminder</PageTitle>
+
+<h3>Manage Email Templates</h3>
+
+<button class="btn btn-secondary mb-3" @onclick="NavigateBackToSchedule">Back to Schedule</button>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+@if (activity == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h4>Activity: @activity.Name</h4>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var template in emailTemplates)
+            {
+                <tr>
+                    <td>@template.Name</td>
+                    <td>@template.Subject</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => EditTemplate(template)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteTemplate(template.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button class="btn btn-success" @onclick="AddNewTemplate">Add New Template</button>
+
+    @if (editingTemplate != null)
+    {
+        <h4>@(editingTemplate.Id == Guid.Empty ? "Add" : "Edit") Email Template</h4>
+        <EditForm Model="@editingTemplate" OnValidSubmit="SaveTemplate">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <InputText id="name" @bind-Value="editingTemplate.Name" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Subject:</label>
+                <InputText id="subject" @bind-Value="editingTemplate.Subject" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label for="body">Body:</label>
+                <InputTextArea id="body" @bind-Value="editingTemplate.Body" class="form-control" rows="5" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+        </EditForm>
+    }
+}
+
+@code {
+    [Parameter]
+    public Guid ActivityId { get; set; }
+
+    private ActivityEntity activity = new ActivityEntity();
+    private List<EmailTemplateEntity> emailTemplates = new List<EmailTemplateEntity>();
+    private EmailTemplateEntity editingTemplate;
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            activity = await ActivityService.GetActivityByIdAsync(ActivityId);
+            await LoadEmailTemplates();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+    }
+
+    private async Task LoadEmailTemplates()
+    {
+        emailTemplates = (await EmailTemplateService.GetByActivityIdAsync(ActivityId)).ToList();
+    }
+
+    private void AddNewTemplate()
+    {
+        editingTemplate = new EmailTemplateEntity { ActivityId = ActivityId };
+    }
+
+    private void EditTemplate(EmailTemplateEntity template)
+    {
+        editingTemplate = template;
+    }
+
+    private async Task DeleteTemplate(Guid id)
+    {
+        try
+        {
+            await EmailTemplateService.DeleteEmailTemplateAsync(id);
+            await LoadEmailTemplates();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error deleting template: {ex.Message}";
+        }
+    }
+
+    private async Task SaveTemplate()
+    {
+        try
+        {
+            if (editingTemplate.Id == Guid.Empty)
+            {
+                await EmailTemplateService.CreateEmailTemplateAsync(editingTemplate);
+            }
+            else
+            {
+                await EmailTemplateService.UpdateEmailTemplateAsync(editingTemplate);
+            }
+            await LoadEmailTemplates();
+            editingTemplate = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving template: {ex.Message}";
+        }
+    }
+
+    private void CancelEdit()
+    {
+        editingTemplate = null;
+    }
+
+    private void NavigateBackToSchedule()
+    {
+        if (activity != null && activity.ScheduleId != Guid.Empty)
+        {
+            NavigationManager.NavigateTo($"/schedule/edit/{activity.ScheduleId}");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/schedule/list");
+        }
+    }
+}

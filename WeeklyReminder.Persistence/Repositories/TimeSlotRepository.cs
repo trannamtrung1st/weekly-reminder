@@ -26,13 +26,12 @@ public class TimeSlotRepository : ITimeSlotRepository
     public async Task AddAsync(TimeSlotEntity timeSlot)
     {
         await _context.TimeSlots.AddAsync(timeSlot);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(TimeSlotEntity timeSlot)
     {
-        _context.Entry(timeSlot).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
+        if (_context.Entry(timeSlot).State == EntityState.Detached)
+            _context.Entry(timeSlot).State = EntityState.Modified;
     }
 
     public async Task DeleteAsync(Guid id)
@@ -41,7 +40,15 @@ public class TimeSlotRepository : ITimeSlotRepository
         if (timeSlot != null)
         {
             _context.TimeSlots.Remove(timeSlot);
-            await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task DeleteByScheduleIdAsync(Guid scheduleId)
+    {
+        var timeSlots = await _context.TimeSlots
+            .Where(ts => ts.ScheduleId == scheduleId)
+            .ToListAsync();
+
+        _context.TimeSlots.RemoveRange(timeSlots);
     }
 }

@@ -7,5 +7,6 @@ public class ScheduleEntity
     public TimeSpan TimeInterval { get; set; }
     public Guid UserId { get; set; }
     public UserEntity User { get; set; }
+    public List<ActivityEntity> Activities { get; set; } = [];
     public List<TimeSlotEntity> TimeSlots { get; set; } = [];
 }

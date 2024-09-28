@@ -2,6 +2,7 @@
 @attribute [Authorize]
 @inject IScheduleService ScheduleService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
 <PageTitle>Schedules - WeeklyReminder</PageTitle>
 
@@ -38,7 +39,7 @@ else
                     <td>@schedule.TimeInterval.ToString(@"hh\:mm")</td>
                     <td>
                         <a href="/schedule/edit/@schedule.Id" class="btn btn-primary">Edit</a>
-                        <button class="btn btn-danger" @onclick="() => DeleteSchedule(schedule.Id)">Delete</button>
+                        <button class="btn btn-danger" @onclick="() => ConfirmDeleteSchedule(schedule.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -80,6 +81,14 @@ else
         catch (Exception ex)
         {
             errorMessage = $"Error deleting schedule: {ex.Message}";
+        }
+    }
+
+    private async Task ConfirmDeleteSchedule(Guid id)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this schedule?"))
+        {
+            await DeleteSchedule(id);
         }
     }
 }

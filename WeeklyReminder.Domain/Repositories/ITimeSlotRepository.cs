@@ -9,4 +9,5 @@ public interface ITimeSlotRepository
     Task AddAsync(TimeSlotEntity timeSlot);
     Task UpdateAsync(TimeSlotEntity timeSlot);
     Task DeleteAsync(Guid id);
+    Task DeleteByScheduleIdAsync(Guid scheduleId);
 }

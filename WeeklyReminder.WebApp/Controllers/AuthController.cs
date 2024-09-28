@@ -9,8 +9,7 @@ using WeeklyReminder.Application.Services.Abstracts;
 namespace WeeklyReminder.WebApp.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
-[Authorize]
+[ApiController, Authorize]
 public class AuthController : ControllerBase
 {
     private readonly ISettingsService _settingsService;

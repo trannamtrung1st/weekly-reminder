@@ -10,4 +10,6 @@ public interface IScheduleService
     Task UpdateScheduleAsync(ScheduleEntity schedule);
     Task DeleteScheduleAsync(Guid id);
     Task CreateScheduleFromTimetableAsync(Guid userId, Stream timetableStream);
+    Task UpdateScheduleFromTimetableAsync(Guid scheduleId, Stream timetableStream);
+    Task<IEnumerable<ActivityEntity>> GetActivitiesByScheduleIdAsync(Guid scheduleId);
 }

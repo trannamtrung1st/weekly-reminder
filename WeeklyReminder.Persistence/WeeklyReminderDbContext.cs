@@ -5,33 +5,40 @@ namespace WeeklyReminder.Persistence;
 
 public class WeeklyReminderDbContext : DbContext
 {
-    public WeeklyReminderDbContext(DbContextOptions<WeeklyReminderDbContext> options)
-        : base(options)
-    {
-    }
-
-    public DbSet<ScheduleEntity> Schedules { get; set; }
-    public DbSet<TimeSlotEntity> TimeSlots { get; set; }
-    public DbSet<ActivityEntity> Activities { get; set; }
     public DbSet<UserEntity> Users { get; set; }
+    public DbSet<ScheduleEntity> Schedules { get; set; }
+    public DbSet<ActivityEntity> Activities { get; set; }
+    public DbSet<TimeSlotEntity> TimeSlots { get; set; }
+    public DbSet<EmailTemplateEntity> EmailTemplates { get; set; }
+
+    public WeeklyReminderDbContext(DbContextOptions<WeeklyReminderDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<ScheduleEntity>()
-            .HasMany(s => s.TimeSlots)
-            .WithOne(s => s.Schedule)
-            .HasForeignKey(s => s.ScheduleId);
+        modelBuilder.Entity<ActivityEntity>()
+            .HasOne(a => a.Schedule)
+            .WithMany(s => s.Activities)
+            .HasForeignKey(a => a.ScheduleId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<UserEntity>()
-            .HasMany(u => u.Schedules)
-            .WithOne(s => s.User)
-            .HasForeignKey(s => s.UserId);
+        modelBuilder.Entity<TimeSlotEntity>()
+            .HasOne(ts => ts.Schedule)
+            .WithMany(s => s.TimeSlots)
+            .HasForeignKey(ts => ts.ScheduleId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<TimeSlotEntity>()
             .HasOne(ts => ts.Activity)
-            .WithMany()
-            .HasForeignKey(ts => ts.ActivityId);
+            .WithMany(a => a.TimeSlots)
+            .HasForeignKey(ts => ts.ActivityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<EmailTemplateEntity>()
+            .HasOne(et => et.Activity)
+            .WithMany(a => a.EmailTemplates)
+            .HasForeignKey(et => et.ActivityId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

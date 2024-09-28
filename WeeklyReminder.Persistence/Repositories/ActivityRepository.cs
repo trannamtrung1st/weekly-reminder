@@ -26,13 +26,12 @@ public class ActivityRepository : IActivityRepository
     public async Task AddAsync(ActivityEntity activity)
     {
         await _context.Activities.AddAsync(activity);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(ActivityEntity activity)
     {
-        _context.Entry(activity).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
+        if (_context.Entry(activity).State == EntityState.Detached)
+            _context.Entry(activity).State = EntityState.Modified;
     }
 
     public async Task DeleteAsync(Guid id)
@@ -41,24 +40,13 @@ public class ActivityRepository : IActivityRepository
         if (activity != null)
         {
             _context.Activities.Remove(activity);
-            await _context.SaveChangesAsync();
         }
     }
 
-    public async Task<ActivityEntity> GetOrCreateByNameAsync(string name)
+    public async Task<IEnumerable<ActivityEntity>> GetByScheduleIdAsync(Guid scheduleId)
     {
-        var activity = await _context.Activities.FirstOrDefaultAsync(a => a.Name == name);
-        if (activity == null)
-        {
-            activity = new ActivityEntity { Name = name };
-            await _context.Activities.AddAsync(activity);
-        }
-        return activity;
-    }
-
-    private string GenerateRandomColor()
-    {
-        var random = new Random();
-        return $"#{random.Next(0x1000000):X6}";
+        return await _context.Activities
+            .Where(a => a.ScheduleId == scheduleId)
+            .ToListAsync();
     }
 }

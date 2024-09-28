@@ -11,7 +11,7 @@ using WeeklyReminder.Persistence;
 namespace WeeklyReminder.Persistence.Migrations
 {
     [DbContext(typeof(WeeklyReminderDbContext))]
-    [Migration("20240925150927_InitialCreate")]
+    [Migration("20240928043907_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -29,9 +29,39 @@ namespace WeeklyReminder.Persistence.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("ScheduleId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("ScheduleId");
+
                     b.ToTable("Activities");
+                });
+
+            modelBuilder.Entity("WeeklyReminder.Domain.Entities.EmailTemplateEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ActivityId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Body")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.ToTable("EmailTemplates");
                 });
 
             modelBuilder.Entity("WeeklyReminder.Domain.Entities.ScheduleEntity", b =>
@@ -103,6 +133,28 @@ namespace WeeklyReminder.Persistence.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("WeeklyReminder.Domain.Entities.ActivityEntity", b =>
+                {
+                    b.HasOne("WeeklyReminder.Domain.Entities.ScheduleEntity", "Schedule")
+                        .WithMany("Activities")
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Schedule");
+                });
+
+            modelBuilder.Entity("WeeklyReminder.Domain.Entities.EmailTemplateEntity", b =>
+                {
+                    b.HasOne("WeeklyReminder.Domain.Entities.ActivityEntity", "Activity")
+                        .WithMany("EmailTemplates")
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+                });
+
             modelBuilder.Entity("WeeklyReminder.Domain.Entities.ScheduleEntity", b =>
                 {
                     b.HasOne("WeeklyReminder.Domain.Entities.UserEntity", "User")
@@ -117,7 +169,7 @@ namespace WeeklyReminder.Persistence.Migrations
             modelBuilder.Entity("WeeklyReminder.Domain.Entities.TimeSlotEntity", b =>
                 {
                     b.HasOne("WeeklyReminder.Domain.Entities.ActivityEntity", "Activity")
-                        .WithMany()
+                        .WithMany("TimeSlots")
                         .HasForeignKey("ActivityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -133,8 +185,17 @@ namespace WeeklyReminder.Persistence.Migrations
                     b.Navigation("Schedule");
                 });
 
+            modelBuilder.Entity("WeeklyReminder.Domain.Entities.ActivityEntity", b =>
+                {
+                    b.Navigation("EmailTemplates");
+
+                    b.Navigation("TimeSlots");
+                });
+
             modelBuilder.Entity("WeeklyReminder.Domain.Entities.ScheduleEntity", b =>
                 {
+                    b.Navigation("Activities");
+
                     b.Navigation("TimeSlots");
                 });
 

@@ -12,18 +12,6 @@ namespace WeeklyReminder.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Activities",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Activities", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -57,6 +45,46 @@ namespace WeeklyReminder.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Activities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    ScheduleId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Activities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Activities_Schedules_ScheduleId",
+                        column: x => x.ScheduleId,
+                        principalTable: "Schedules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmailTemplates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Subject = table.Column<string>(type: "TEXT", nullable: true),
+                    Body = table.Column<string>(type: "TEXT", nullable: true),
+                    ActivityId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailTemplates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmailTemplates_Activities_ActivityId",
+                        column: x => x.ActivityId,
+                        principalTable: "Activities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TimeSlots",
                 columns: table => new
                 {
@@ -84,6 +112,16 @@ namespace WeeklyReminder.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Activities_ScheduleId",
+                table: "Activities",
+                column: "ScheduleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailTemplates_ActivityId",
+                table: "EmailTemplates",
+                column: "ActivityId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Schedules_UserId",
                 table: "Schedules",
                 column: "UserId");
@@ -102,6 +140,9 @@ namespace WeeklyReminder.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "EmailTemplates");
+
             migrationBuilder.DropTable(
                 name: "TimeSlots");
 

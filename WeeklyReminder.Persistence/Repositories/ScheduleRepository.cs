@@ -15,7 +15,11 @@ public class ScheduleRepository : IScheduleRepository
 
     public async Task<ScheduleEntity> GetByIdAsync(Guid id)
     {
-        return await _context.Schedules.FindAsync(id);
+        return await _context.Schedules
+            .Include(s => s.User)
+            .Include(s => s.TimeSlots)
+            .ThenInclude(t => t.Activity)
+            .FirstOrDefaultAsync(s => s.Id == id);
     }
 
     public async Task<IEnumerable<ScheduleEntity>> GetAllAsync()
@@ -28,13 +32,12 @@ public class ScheduleRepository : IScheduleRepository
     public async Task AddAsync(ScheduleEntity schedule)
     {
         await _context.Schedules.AddAsync(schedule);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(ScheduleEntity schedule)
     {
-        _context.Entry(schedule).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
+        if (_context.Entry(schedule).State == EntityState.Detached)
+            _context.Entry(schedule).State = EntityState.Modified;
     }
 
     public async Task DeleteAsync(Guid id)
@@ -43,7 +46,6 @@ public class ScheduleRepository : IScheduleRepository
         if (schedule != null)
         {
             _context.Schedules.Remove(schedule);
-            await _context.SaveChangesAsync();
         }
     }
 
@@ -51,6 +53,7 @@ public class ScheduleRepository : IScheduleRepository
     {
         return await _context.Schedules
             .Include(d => d.TimeSlots)
+            .ThenInclude(d => d.Activity)
             .FirstOrDefaultAsync(s => s.UserId == userId);
     }
 }

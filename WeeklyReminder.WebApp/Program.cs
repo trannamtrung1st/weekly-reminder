@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using WeeklyReminder.WebApp.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using WeeklyReminder.Domain.Services.Abstracts;
+using WeeklyReminder.Application.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +36,8 @@ builder.Services
     .AddScoped<IScheduleRepository, ScheduleRepository>()
     .AddScoped<ITimeSlotRepository, TimeSlotRepository>()
     .AddScoped<IActivityRepository, ActivityRepository>()
-    .AddScoped<IUserRepository, UserRepository>();
+    .AddScoped<IUserRepository, UserRepository>()
+    .AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
 
 builder.Services.AddCascadingAuthenticationState();
 
@@ -53,7 +55,9 @@ builder.Services
     .AddScoped<IWeeklyTimetableParser, WeeklyTimetableParser>()
     .AddScoped<IUserService, UserService>()
     .AddScoped<ISettingsService, SettingsService>()
-    .AddScoped<IEmailService, EmailService>();
+    .AddScoped<IEmailService, EmailService>()
+    .AddScoped<IEmailTemplateService, EmailTemplateService>()
+    .AddScoped<IActivityService, ActivityService>();
 
 builder.Services
     .AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();

@@ -9,5 +9,5 @@ public interface IActivityRepository
     Task AddAsync(ActivityEntity activity);
     Task UpdateAsync(ActivityEntity activity);
     Task DeleteAsync(Guid id);
-    Task<ActivityEntity> GetOrCreateByNameAsync(string name);
+    Task<IEnumerable<ActivityEntity>> GetByScheduleIdAsync(Guid scheduleId);
 }
