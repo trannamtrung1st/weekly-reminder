@@ -20,7 +20,12 @@ public class SettingsService : ISettingsService
         var credentialsPath = Path.Combine(AppContext.BaseDirectory, CredentialsFile);
         if (!File.Exists(credentialsPath))
         {
-            var defaultCredentials = new SystemCredentials();
+            var defaultCredentials = new SystemCredentials()
+            {
+                Email = string.Empty,
+                Username = "admin",
+                Password = null
+            };
             return defaultCredentials;
         }
 
