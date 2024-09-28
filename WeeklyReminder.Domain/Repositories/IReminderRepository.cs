@@ -11,4 +11,5 @@ public interface IReminderRepository
     Task UpdateAsync(ReminderEntity reminder);
     Task<int> GetUnresolvedCountForScheduleAsync(Guid scheduleId);
     Task DeleteAllForScheduleAsync(Guid scheduleId);
+    Task<int> GetUnresolvedCountForActivityAsync(Guid activityId);
 }

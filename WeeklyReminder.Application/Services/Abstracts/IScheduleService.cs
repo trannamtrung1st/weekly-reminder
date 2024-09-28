@@ -14,4 +14,5 @@ public interface IScheduleService
     Task<IEnumerable<ActivityEntity>> GetActivitiesByScheduleIdAsync(Guid scheduleId);
     Task<int> GetUnresolvedRemindersCountAsync(Guid scheduleId);
     Task ClearAllRemindersAsync(Guid scheduleId);
+    Task<Dictionary<Guid, int>> GetUnresolvedRemindersCountPerActivityAsync(Guid scheduleId);
 }

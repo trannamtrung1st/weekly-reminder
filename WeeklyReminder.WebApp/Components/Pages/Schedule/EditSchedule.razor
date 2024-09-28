@@ -54,6 +54,7 @@ else
             <tr>
                 <th>Activity</th>
                 <th>Number of Templates</th>
+                <th>Unresolved Reminders</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -63,6 +64,7 @@ else
                 <tr>
                     <td>@activity.Name</td>
                     <td>@activity.EmailTemplates.Count</td>
+                    <td>@(unresolvedRemindersPerActivity.TryGetValue(activity.Id, out var count) ? count : 0)</td>
                     <td>
                         <a href="/email-templates/@activity.Id" class="btn btn-secondary">Manage Email Templates</a>
                     </td>
@@ -89,6 +91,7 @@ else
     private IBrowserFile uploadedFile;
     private int unresolvedRemindersCount;
     private string successMessage;
+    private Dictionary<Guid, int> unresolvedRemindersPerActivity = new Dictionary<Guid, int>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -103,6 +106,7 @@ else
 
             activities = await ActivityService.GetActivitiesByScheduleIdAsync(Id);
             unresolvedRemindersCount = await ScheduleService.GetUnresolvedRemindersCountAsync(Id);
+            unresolvedRemindersPerActivity = await ScheduleService.GetUnresolvedRemindersCountPerActivityAsync(Id);
         }
         catch (Exception ex)
         {

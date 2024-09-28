@@ -193,4 +193,24 @@ public class ScheduleService : IScheduleService
 
         await _reminderRepository.DeleteAllForScheduleAsync(scheduleId);
     }
+
+    public async Task<Dictionary<Guid, int>> GetUnresolvedRemindersCountPerActivityAsync(Guid scheduleId)
+    {
+        var schedule = await _scheduleRepository.GetByIdAsync(scheduleId);
+        if (schedule == null)
+        {
+            throw new Exception("Schedule not found");
+        }
+
+        var activities = await _activityRepository.GetByScheduleIdAsync(scheduleId);
+        var result = new Dictionary<Guid, int>();
+
+        foreach (var activity in activities)
+        {
+            var count = await _reminderRepository.GetUnresolvedCountForActivityAsync(activity.Id);
+            result[activity.Id] = count;
+        }
+
+        return result;
+    }
 }

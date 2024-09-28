@@ -59,4 +59,11 @@ public class ReminderRepository : IReminderRepository
         _context.Reminders.RemoveRange(remindersToDelete);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<int> GetUnresolvedCountForActivityAsync(Guid activityId)
+    {
+        return await _context.Reminders
+            .Where(r => r.TimeSlot.ActivityId == activityId && !r.IsResolved)
+            .CountAsync();
+    }
 }
