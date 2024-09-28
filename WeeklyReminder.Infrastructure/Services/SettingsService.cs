@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using WeeklyReminder.Application.Services.Abstracts;
 using WeeklyReminder.Domain.Models;
 
@@ -8,7 +7,7 @@ public class SettingsService : ISettingsService
 {
     private const string SettingsFile = "settings.txt";
 
-    public async Task<SettingsModel> GetSettingsAsync()
+    public async Task<SettingsModel> GetSettingsAsync(bool getSecrets)
     {
         var settingsPath = Path.Combine(AppContext.BaseDirectory, SettingsFile);
         var lines = await File.ReadAllLinesAsync(settingsPath);
@@ -28,13 +27,15 @@ public class SettingsService : ISettingsService
                         settings.Username = value;
                         break;
                     case "password":
-                        settings.Password = value;
+                        if (getSecrets)
+                            settings.Password = value;
                         break;
                     case "email":
                         settings.Email = value;
                         break;
                     case "apppassword":
-                        settings.AppPassword = value;
+                        if (getSecrets)
+                            settings.AppPassword = value;
                         break;
                 }
             }
@@ -46,12 +47,13 @@ public class SettingsService : ISettingsService
     public async Task SaveSettingsAsync(SettingsModel settings)
     {
         var settingsPath = Path.Combine(AppContext.BaseDirectory, SettingsFile);
+        var currentSettings = await GetSettingsAsync(getSecrets: true);
         var lines = new[]
         {
-            $"username={settings.Username}",
-            $"password={settings.Password}",
-            $"email={settings.Email}",
-            $"apppassword={settings.AppPassword}"
+            $"username={settings.Username ?? currentSettings.Username}",
+            $"password={settings.Password ?? currentSettings.Password}",
+            $"email={settings.Email ?? currentSettings.Email}",
+            $"apppassword={settings.AppPassword ?? currentSettings.AppPassword}"
         };
 
         await File.WriteAllLinesAsync(settingsPath, lines);

@@ -98,7 +98,7 @@
     {
         try
         {
-            settings = await SettingsService.GetSettingsAsync();
+            settings = await SettingsService.GetSettingsAsync(getSecrets: false);
         }
         catch (Exception ex)
         {

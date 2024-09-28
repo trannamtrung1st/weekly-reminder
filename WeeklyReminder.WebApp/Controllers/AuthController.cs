@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromForm] LoginModel model)
     {
-        var settings = await _settingsService.GetSettingsAsync();
+        var settings = await _settingsService.GetSettingsAsync(getSecrets: true);
 
         if (model.Username == settings.Username && model.Password == settings.Password)
         {
