@@ -6,4 +6,5 @@ public interface ISettingsService
 {
     Task<SettingsModel> GetSettingsAsync(bool getSecrets);
     Task SaveSettingsAsync(SettingsModel settings);
+    string GetApplicationBaseUrl();
 }

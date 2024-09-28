@@ -28,7 +28,6 @@ builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddAuthenticationCore()
     .AddHttpContextAccessor();
-;
 
 builder.Services.AddDbContext<WeeklyReminderDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -39,7 +38,8 @@ builder.Services
     .AddScoped<ITimeSlotRepository, TimeSlotRepository>()
     .AddScoped<IActivityRepository, ActivityRepository>()
     .AddScoped<IUserRepository, UserRepository>()
-    .AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
+    .AddScoped<IEmailTemplateRepository, EmailTemplateRepository>()
+    .AddScoped<IReminderRepository, ReminderRepository>();
 
 builder.Services.AddCascadingAuthenticationState();
 

@@ -1,11 +1,18 @@
 using WeeklyReminder.Application.Services.Abstracts;
 using WeeklyReminder.Domain.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace WeeklyReminder.Infrastructure.Services;
 
 public class SettingsService : ISettingsService
 {
     private const string SettingsFile = "settings.txt";
+    private readonly IConfiguration _configuration;
+
+    public SettingsService(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
 
     public async Task<SettingsModel> GetSettingsAsync(bool getSecrets)
     {
@@ -61,5 +68,10 @@ public class SettingsService : ISettingsService
         };
 
         await File.WriteAllLinesAsync(settingsPath, lines);
+    }
+
+    public string GetApplicationBaseUrl()
+    {
+        return _configuration["ApplicationBaseUrl"];
     }
 }

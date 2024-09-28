@@ -10,6 +10,7 @@ public class WeeklyReminderDbContext : DbContext
     public DbSet<ActivityEntity> Activities { get; set; }
     public DbSet<TimeSlotEntity> TimeSlots { get; set; }
     public DbSet<EmailTemplateEntity> EmailTemplates { get; set; }
+    public DbSet<ReminderEntity> Reminders { get; set; }
 
     public WeeklyReminderDbContext(DbContextOptions<WeeklyReminderDbContext> options) : base(options) { }
 
@@ -39,6 +40,12 @@ public class WeeklyReminderDbContext : DbContext
             .HasOne(et => et.Activity)
             .WithMany(a => a.EmailTemplates)
             .HasForeignKey(et => et.ActivityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ReminderEntity>()
+            .HasOne(r => r.TimeSlot)
+            .WithMany(ts => ts.Reminders)
+            .HasForeignKey(r => r.TimeSlotId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

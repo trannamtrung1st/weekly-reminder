@@ -14,19 +14,22 @@ public class ScheduleService : IScheduleService
     private readonly ITimeSlotRepository _timeSlotRepository;
     private readonly IActivityRepository _activityRepository;
     private readonly IWeeklyTimetableParser _timetableParser;
+    private readonly IReminderRepository _reminderRepository;
 
     public ScheduleService(
         IUnitOfWork unitOfWork,
         IScheduleRepository scheduleRepository,
         ITimeSlotRepository timeSlotRepository,
         IActivityRepository activityRepository,
-        IWeeklyTimetableParser timetableParser)
+        IWeeklyTimetableParser timetableParser,
+        IReminderRepository reminderRepository)
     {
         _unitOfWork = unitOfWork;
         _scheduleRepository = scheduleRepository;
         _timeSlotRepository = timeSlotRepository;
         _activityRepository = activityRepository;
         _timetableParser = timetableParser;
+        _reminderRepository = reminderRepository;
     }
 
     public async Task<ScheduleEntity> GetScheduleByIdAsync(Guid id)
@@ -167,5 +170,27 @@ public class ScheduleService : IScheduleService
     public async Task<IEnumerable<ActivityEntity>> GetActivitiesByScheduleIdAsync(Guid scheduleId)
     {
         return await _activityRepository.GetByScheduleIdAsync(scheduleId);
+    }
+
+    public async Task<int> GetUnresolvedRemindersCountAsync(Guid scheduleId)
+    {
+        var schedule = await _scheduleRepository.GetByIdAsync(scheduleId);
+        if (schedule == null)
+        {
+            throw new Exception("Schedule not found");
+        }
+
+        return await _reminderRepository.GetUnresolvedCountForScheduleAsync(scheduleId);
+    }
+
+    public async Task ClearAllRemindersAsync(Guid scheduleId)
+    {
+        var schedule = await _scheduleRepository.GetByIdAsync(scheduleId);
+        if (schedule == null)
+        {
+            throw new Exception("Schedule not found");
+        }
+
+        await _reminderRepository.DeleteAllForScheduleAsync(scheduleId);
     }
 }

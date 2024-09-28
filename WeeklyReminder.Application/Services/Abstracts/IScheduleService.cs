@@ -12,4 +12,6 @@ public interface IScheduleService
     Task CreateScheduleFromTimetableAsync(Guid userId, Stream timetableStream);
     Task UpdateScheduleFromTimetableAsync(Guid scheduleId, Stream timetableStream);
     Task<IEnumerable<ActivityEntity>> GetActivitiesByScheduleIdAsync(Guid scheduleId);
+    Task<int> GetUnresolvedRemindersCountAsync(Guid scheduleId);
+    Task ClearAllRemindersAsync(Guid scheduleId);
 }

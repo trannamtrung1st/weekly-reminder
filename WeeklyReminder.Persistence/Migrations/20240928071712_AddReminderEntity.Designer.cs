@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WeeklyReminder.Persistence;
 
@@ -10,9 +11,11 @@ using WeeklyReminder.Persistence;
 namespace WeeklyReminder.Persistence.Migrations
 {
     [DbContext(typeof(WeeklyReminderDbContext))]
-    partial class WeeklyReminderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240928071712_AddReminderEntity")]
+    partial class AddReminderEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");

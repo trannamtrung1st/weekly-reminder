@@ -6,4 +6,5 @@ public interface IReminderService
 {
     Task CheckUpcomingActivitiesAndSendReminders();
     Task SendReminderEmail(UserEntity user, ActivityEntity activity, TimeSlotEntity timeSlot);
+    Task<bool> ConfirmReminderAsync(string token);
 }

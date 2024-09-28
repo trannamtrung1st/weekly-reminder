@@ -9,4 +9,5 @@ public class TimeSlotEntity
     public ActivityEntity Activity { get; set; }
     public Guid ScheduleId { get; set; }
     public ScheduleEntity Schedule { get; set; }
+    public List<ReminderEntity> Reminders { get; set; } = new List<ReminderEntity>();
 }

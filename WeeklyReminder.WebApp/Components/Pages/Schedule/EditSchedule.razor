@@ -4,6 +4,7 @@
 @inject IActivityService ActivityService
 @inject IEmailTemplateService EmailTemplateService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
 <PageTitle>Edit Schedule - WeeklyReminder</PageTitle>
 
@@ -36,6 +37,11 @@ else
             <InputFile id="excelFile" OnChange="HandleFileUpload" class="form-control" />
         </div>
 
+        <div class="form-group">
+            <label>Unresolved Reminders: @unresolvedRemindersCount</label>
+            <button type="button" class="btn btn-warning" @onclick="ClearAllReminders">Clear All Reminders</button>
+        </div>
+
         <div class="mt-2">
             <button type="submit" class="btn btn-primary">Save</button>
             <a href="/schedule/list" class="btn btn-secondary">Cancel</a>
@@ -66,6 +72,13 @@ else
     </table>
 }
 
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success" role="alert">
+        @successMessage
+    </div>
+}
+
 @code {
     [Parameter]
     public Guid Id { get; set; }
@@ -74,13 +87,22 @@ else
     private IEnumerable<ActivityEntity> activities = new List<ActivityEntity>();
     private string errorMessage;
     private IBrowserFile uploadedFile;
+    private int unresolvedRemindersCount;
+    private string successMessage;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             schedule = await ScheduleService.GetScheduleByIdAsync(Id);
+            if (schedule == null)
+            {
+                errorMessage = "Schedule not found.";
+                return;
+            }
+
             activities = await ActivityService.GetActivitiesByScheduleIdAsync(Id);
+            unresolvedRemindersCount = await ScheduleService.GetUnresolvedRemindersCountAsync(Id);
         }
         catch (Exception ex)
         {
@@ -103,15 +125,36 @@ else
             }
             activities = await ActivityService.GetActivitiesByScheduleIdAsync(Id);
             errorMessage = null;
+            successMessage = "Schedule updated successfully.";
+            uploadedFile = null;
         }
         catch (Exception ex)
         {
             errorMessage = $"Error updating schedule: {ex.Message}";
+            successMessage = null;
         }
     }
 
     private void HandleFileUpload(InputFileChangeEventArgs e)
     {
         uploadedFile = e.File;
+    }
+
+    private async Task ClearAllReminders()
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to clear all reminders? This action cannot be undone.");
+        if (confirmed)
+        {
+            try
+            {
+                await ScheduleService.ClearAllRemindersAsync(Id);
+                unresolvedRemindersCount = 0;
+                errorMessage = null;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Error clearing reminders: {ex.Message}";
+            }
+        }
     }
 }
