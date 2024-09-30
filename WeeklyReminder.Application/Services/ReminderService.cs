@@ -77,7 +77,7 @@ public class ReminderService : IReminderService
     private static string ReplaceVariables(string content, ActivityEntity activity, TimeSlotEntity timeSlot, string confirmationLink)
     {
         return content.Replace("{ActivityName}", activity.Name)
-            .Replace("{StartTime}", timeSlot.StartTime.ToString("HH:mm"))
+            .Replace("{StartTime}", TimeSpan.FromMinutes(timeSlot.StartTime).ToString("HH:mm"))
             .Replace("{ConfirmationLink}", confirmationLink);
     }
 
